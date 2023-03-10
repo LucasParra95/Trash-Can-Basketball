@@ -110,9 +110,9 @@ function create() {
 	current_best_text = game.add.text(143, 281, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });// 230, 450
 	current_best_score_text = game.add.text(187, 312, '', { font: 'Arial', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
 
-	hoop = game.add.sprite(150, 175, 'hoop'); // 141, 100
-	left_rim = game.add.sprite(150, 184, 'side rim'); // 241, 296
-	right_rim = game.add.sprite(249, 184, 'side rim'); // 398, 296
+	hoop = game.add.sprite(206, 175, 'hoop'); // 141, 100
+	left_rim = game.add.sprite(206, 184, 'side rim'); // 241, 296
+	right_rim = game.add.sprite(306, 184, 'side rim'); // 398, 296
 
 	game.physics.p2.enable([ left_rim, right_rim], false);
 
@@ -142,7 +142,7 @@ function create() {
 function update() {
 
 	if (ball && ball.body.velocity.y > 0) {
-		front_rim = game.add.sprite(148, 182, 'front rim');
+		front_rim = game.add.sprite(206, 182, 'front rim');
 		ball.body.collides([collisionGroup], hitRim, this);
 	}
 
@@ -201,12 +201,12 @@ function createBall() {
 
 	var xpos;
 	if (current_score === 0) {
-		xpos = 200;
+		xpos = 256;
 	} else {
 		xpos = 60 + Math.random() * 280;
 	}
 	spawn.play();
-	ball = game.add.sprite(xpos, 547, 'ball');
+	ball = game.add.sprite(xpos, 600, 'ball');
 	game.add.tween(ball.scale).from({x : 0.7, y : 0.7}, 100, Phaser.Easing.Linear.None, true, 0, 0, false);
 	game.physics.p2.enable(ball, false);
 	ball.body.setCircle(60); // NOTE: Goes from 60 to 36
