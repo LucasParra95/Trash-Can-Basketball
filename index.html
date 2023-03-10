@@ -105,11 +105,6 @@ function create() {
 
 	game.stage.backgroundColor = "#ffffff";
 
-	// high_score_text = game.add.text(450, 25, 'High Score\n' + high_score, { font: 'Arial', fontSize: '32px', fill: '#000', align: 'center' });
-	current_score_text = game.add.text(187, 312, '', { font: 'Arial', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
-	current_best_text = game.add.text(143, 281, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });// 230, 450
-	current_best_score_text = game.add.text(187, 312, '', { font: 'Arial', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
-
 	hoop = game.add.sprite(206, 175, 'hoop'); // 141, 100
 	left_rim = game.add.sprite(206, 184, 'side rim'); // 241, 296
 	right_rim = game.add.sprite(306, 184, 'side rim'); // 398, 296
@@ -126,6 +121,12 @@ function create() {
 	right_rim.body.setCollisionGroup(collisionGroup);
 	right_rim.body.collides([collisionGroup]);
 
+	// high_score_text = game.add.text(450, 25, 'High Score\n' + high_score, { font: 'Arial', fontSize: '32px', fill: '#000', align: 'center' });
+	current_score_text = game.add.text(244, 351, '', { font: 'Arial', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
+	current_best_text = game.add.text(200, 320, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });// 230, 450
+	current_best_score_text = game.add.text(244, 351, '', { font: 'Arial', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
+
+
 	createBall();
 
 	cursors = game.input.keyboard.createCursorKeys();
@@ -137,6 +138,11 @@ function create() {
 	var instructions = document.createElement("span");
 	instructions.innerHTML = "Instructions: Quickly drag the paper ball to shoot it into the trash can!";
 	document.body.appendChild(instructions);
+
+	var firma = document.createElement("h2");
+	firma.innerHTML = "Developed by Lucas Parra";
+	document.body.appendChild(firma);
+
 }
 
 function update() {
@@ -167,8 +173,8 @@ function update() {
 			current_best_text.text = 'Current Best';
 			current_best_score_text.text = high_score;
 		}
-		emoji = game.add.sprite(180, 100, emojiName);
-		emoji.scale.setTo(0.25, 0.25);
+		emoji = game.add.sprite(220, 100, emojiName);
+		emoji.scale.setTo(0.50, 0.50);
 		moveInTween = game.add.tween(emoji).from( { y: 150 }, 500, Phaser.Easing.Elastic.Out, true);
 		fadeInTween = game.add.tween(emoji).from( { alpha: 0 }, 200, Phaser.Easing.Linear.None, true, 0, 0, false);
 		moveInTween.onComplete.add(tweenOut, this);
@@ -259,9 +265,9 @@ function launch(x_traj) {
 		ball.launched = true;
 		game.physics.p2.gravity.y = 3000;
 
-		game.physics.p2.gravity.x = 200;
+		//game.physics.p2.gravity.x = 200;
 
-		game.add.tween(ball.scale).to({x : 0.6, y : 0.6}, 500, Phaser.Easing.Linear.None, true, 0, 0, false);
+		game.add.tween(ball.scale).to({x : 0.5, y : 0.5}, 500, Phaser.Easing.Linear.None, true, 0, 0, false);
 		ball.body.velocity.x = x_traj;
 		ball.body.velocity.y = -1750;
 		ball.body.rotateRight(x_traj / 3);
