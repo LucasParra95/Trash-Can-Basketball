@@ -296,7 +296,7 @@ function launch(x_traj) {
 		ball.launched = true;
 		game.physics.p2.gravity.y = 3000;
 
-		game.physics.p2.gravity.x = 2000;
+		//game.physics.p2.gravity.x = 2000;
 
 		game.add.tween(ball.scale).to({x : 0.4, y : 0.4}, 500, Phaser.Easing.Linear.None, true, 0, 0, false);
 		ball.body.velocity.x = x_traj;
