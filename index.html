@@ -33,53 +33,61 @@ var game = new Phaser.Game(512, 800, Phaser.CANVAS, '', { preload: preload, crea
 
 function preload() {
 
-    game.load.image('ball', 'assets/images/ball.png');
+    game.load.image('ball', 'assets/images/ball2.png');
     game.load.image('hoop', 'assets/images/Recurso4.png');
-		game.load.image('side rim', 'assets/images/side_rim.png');
-		game.load.image('front rim', 'assets/images/front_rim.png');
+	game.load.image('side rim', 'assets/images/side_rim.png');
+	game.load.image('front rim', 'assets/images/front_rim.png');
+	game.load.image('left wall can', 'assets/images/Recurso 6.png');
+	game.load.image('right wall can', 'assets/images/Recurso 8.png');
+	game.load.image('bottom can', 'assets/images/Recurso 7.png');
 
-		game.load.image('win0', 'assets/images/win0.png');
-		game.load.image('win1', 'assets/images/win1.png');
-		game.load.image('win2', 'assets/images/win2.png');
-		game.load.image('win3', 'assets/images/win3.png');
-		game.load.image('win4', 'assets/images/win4.png');
-		game.load.image('lose0', 'assets/images/lose0.png');
-		game.load.image('lose1', 'assets/images/lose1.png');
-		game.load.image('lose2', 'assets/images/lose2.png');
-		game.load.image('lose3', 'assets/images/lose3.png');
-		game.load.image('lose4', 'assets/images/lose4.png');
 
-		game.load.audio('score', 'assets/audio/score.wav');
-		game.load.audio('backboard', 'assets/audio/backboard.wav');
-		game.load.audio('whoosh', 'assets/audio/whoosh.wav');
-		game.load.audio('fail', 'assets/audio/fail.wav');
-		game.load.audio('spawn', 'assets/audio/spawn.wav');
+	game.load.image('win0', 'assets/images/win0.png');
+	game.load.image('win1', 'assets/images/win1.png');
+	game.load.image('win2', 'assets/images/win2.png');
+	game.load.image('win3', 'assets/images/win3.png');
+	game.load.image('win4', 'assets/images/win4.png');
+	game.load.image('lose0', 'assets/images/lose0.png');
+	game.load.image('lose1', 'assets/images/lose1.png');
+	game.load.image('lose2', 'assets/images/lose2.png');
+	game.load.image('lose3', 'assets/images/lose3.png');
+	game.load.image('lose4', 'assets/images/lose4.png');
+
+	game.load.audio('score', 'assets/audio/score.wav');
+	game.load.audio('backboard', 'assets/audio/backboard.wav');
+	game.load.audio('whoosh', 'assets/audio/whoosh.wav');
+	game.load.audio('fail', 'assets/audio/fail.wav');
+	game.load.audio('spawn', 'assets/audio/spawn.wav');
 
 }
 
 var hoop,
- 		left_rim,
- 		right_rim,
- 		ball,
- 		front_rim,
- 		current_score = 0,
- 		current_score_text,
- 		high_score = 0,
- 		high_score_text,
- 		current_best_text;
+ 	left_rim,
+	right_rim,
+	left_wall_can,
+	right_wall_can,
+	bottom_can,
+	ball,
+	front_rim,
+	current_score = 0,
+	current_score_text,
+	high_score = 0,
+	high_score_text,
+	current_best_text,
+	wind = 0;
 
 var score_sound,
-		backboard,
-		whoosh,
-		fail,
-		spawn;
+	backboard,
+	whoosh,
+	fail,
+	spawn;
 
 var moveInTween,
-		fadeInTween,
-		moveOutTween,
-		fadeOutTween,
-		emoji,
-		emojiName;
+	fadeInTween,
+	moveOutTween,
+	fadeOutTween,
+	emoji,
+	emojiName;
 
 var collisionGroup;
 
@@ -89,7 +97,7 @@ function create() {
 
 	game.physics.p2.setImpactEvents(true);
 
-  game.physics.p2.restitution = 0.0000001;
+  game.physics.p2.restitution = 0.1;
   game.physics.p2.gravity.y = 0;
   game.physics.p2.gravity.x = 0;
 
@@ -107,9 +115,13 @@ function create() {
 
 	hoop = game.add.sprite(206, 175, 'hoop'); // 141, 100
 	left_rim = game.add.sprite(206, 184, 'side rim'); // 241, 296
-	right_rim = game.add.sprite(306, 184, 'side rim'); // 398, 296
+	right_rim = game.add.sprite(300, 184, 'side rim'); // 398, 296
+	left_wall_can = game.add.sprite(210,240, 'left wall can')
+	right_wall_can = game.add.sprite(295,240, 'right wall can')
+	bottom_can = game.add.sprite(256,300, 'bottom can')
 
-	game.physics.p2.enable([ left_rim, right_rim], false);
+
+	game.physics.p2.enable([ left_rim, right_rim, left_wall_can, right_wall_can, bottom_can], false);
 
 	left_rim.body.setCircle(2.5);
 	left_rim.body.static = true;
@@ -120,6 +132,17 @@ function create() {
 	right_rim.body.static = true;
 	right_rim.body.setCollisionGroup(collisionGroup);
 	right_rim.body.collides([collisionGroup]);
+
+	// bottom_can.body.setCircle(1000)
+	left_wall_can.body.static = true;
+	left_wall_can.body.setCollisionGroup(collisionGroup);
+	left_wall_can.body.collides([collisionGroup]);
+	right_wall_can.body.static = true;
+	right_wall_can.body.setCollisionGroup(collisionGroup);
+	right_wall_can.body.collides([collisionGroup]);
+	bottom_can.body.static = true;
+	bottom_can.body.setCollisionGroup(collisionGroup);
+	bottom_can.body.collides([collisionGroup]);
 
 	// high_score_text = game.add.text(450, 25, 'High Score\n' + high_score, { font: 'Arial', fontSize: '32px', fill: '#000', align: 'center' });
 	current_score_text = game.add.text(244, 351, '', { font: 'Arial', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
@@ -148,7 +171,7 @@ function create() {
 function update() {
 
 	if (ball && ball.body.velocity.y > 0) {
-		front_rim = game.add.sprite(206, 182, 'front rim');
+		// front_rim = game.add.sprite(206, 182, 'front rim');
 		ball.body.collides([collisionGroup], hitRim, this);
 	}
 
@@ -161,6 +184,14 @@ function update() {
 			current_score += 1;
 			current_score_text.text = current_score;
 			score_sound.play();
+			setTimeout(function(){
+				game.physics.p2.gravity.y = 0;
+				game.physics.p2.gravity.x = 0;
+				ball.kill();
+				createBall();
+			},2000)
+			// ball.create()
+
 		} else {
 			emojiName = "lose" + rand;
 			fail.play();
@@ -265,9 +296,9 @@ function launch(x_traj) {
 		ball.launched = true;
 		game.physics.p2.gravity.y = 3000;
 
-		//game.physics.p2.gravity.x = 200;
+		game.physics.p2.gravity.x = 2000;
 
-		game.add.tween(ball.scale).to({x : 0.5, y : 0.5}, 500, Phaser.Easing.Linear.None, true, 0, 0, false);
+		game.add.tween(ball.scale).to({x : 0.4, y : 0.4}, 500, Phaser.Easing.Linear.None, true, 0, 0, false);
 		ball.body.velocity.x = x_traj;
 		ball.body.velocity.y = -1750;
 		ball.body.rotateRight(x_traj / 3);
