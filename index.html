@@ -4,24 +4,25 @@
 	<meta charset="UTF-8" />
     <title>Trash Can Basketball</title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
-	<h2>Productive Day in the Office</h2>
+	<h2>Productive Day at the Office</h2>
     <style type="text/css">
         body {
             margin: 0;
+			font-family: 'Verdana';
         }
-				canvas {
-					margin: 0 auto;
-					border: thin solid black;
-				}
-				span {
-					display: block;
-					margin: 30px auto;
-					width: 500px;
-					text-align: center;
-				}
-				h2 {
-					text-align: center;
-				}
+		canvas {
+			margin: 0 auto;
+			border: thin solid black;
+		}
+		span {
+			display: block;
+			margin: 30px auto;
+			width: 500px;
+			text-align: center;
+		}
+		h2 {
+			text-align: center;
+		}
     </style>
 </head>
 <body>
@@ -74,7 +75,8 @@ var hoop,
 	high_score = 0,
 	high_score_text,
 	current_best_text,
-	wind = 0;
+	wind = 0,
+	wind_text;
 
 var score_sound,
 	backboard,
@@ -90,6 +92,7 @@ var moveInTween,
 	emojiName;
 
 var collisionGroup;
+var plusOrMinus = Math.random() < 0.5 ? -1 : 1;
 
 function create() {
 
@@ -97,7 +100,7 @@ function create() {
 
 	game.physics.p2.setImpactEvents(true);
 
-  game.physics.p2.restitution = 0.1;
+  game.physics.p2.restitution = 0.4;
   game.physics.p2.gravity.y = 0;
   game.physics.p2.gravity.x = 0;
 
@@ -118,22 +121,21 @@ function create() {
 	right_rim = game.add.sprite(300, 184, 'side rim'); // 398, 296
 	left_wall_can = game.add.sprite(210,240, 'left wall can')
 	right_wall_can = game.add.sprite(295,240, 'right wall can')
-	bottom_can = game.add.sprite(256,300, 'bottom can')
+	bottom_can = game.add.sprite(256,308, 'bottom can')
 
 
 	game.physics.p2.enable([ left_rim, right_rim, left_wall_can, right_wall_can, bottom_can], false);
 
-	left_rim.body.setCircle(2.5);
+	left_rim.body.setCircle(1);
 	left_rim.body.static = true;
 	left_rim.body.setCollisionGroup(collisionGroup);
 	left_rim.body.collides([collisionGroup]);
 
-	right_rim.body.setCircle(2.5);
+	right_rim.body.setCircle(1);
 	right_rim.body.static = true;
 	right_rim.body.setCollisionGroup(collisionGroup);
 	right_rim.body.collides([collisionGroup]);
 
-	// bottom_can.body.setCircle(1000)
 	left_wall_can.body.static = true;
 	left_wall_can.body.setCollisionGroup(collisionGroup);
 	left_wall_can.body.collides([collisionGroup]);
@@ -145,10 +147,10 @@ function create() {
 	bottom_can.body.collides([collisionGroup]);
 
 	// high_score_text = game.add.text(450, 25, 'High Score\n' + high_score, { font: 'Arial', fontSize: '32px', fill: '#000', align: 'center' });
-	current_score_text = game.add.text(244, 351, '', { font: 'Arial', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
+	current_score_text = game.add.text(244, 351, '', { font: 'Verdana', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
 	current_best_text = game.add.text(200, 320, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });// 230, 450
-	current_best_score_text = game.add.text(244, 351, '', { font: 'Arial', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
-
+	current_best_score_text = game.add.text(244, 351, '', { font: 'Verdana', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
+	wind_text = game.add.text(240, 750, '', { font: 'Verdana', fontSize: '25px', fill: '#000', align: 'right' })
 
 	createBall();
 
@@ -189,8 +191,9 @@ function update() {
 				game.physics.p2.gravity.x = 0;
 				ball.kill();
 				createBall();
-			},2000)
-			// ball.create()
+			},2000);
+			wind = (Math.random() < 0.5 ? -1 : 1) * current_score * 200;
+			wind_text.text = 'El viento es de ' +  (wind / 100)  + 'k/h';
 
 		} else {
 			emojiName = "lose" + rand;
@@ -203,8 +206,10 @@ function update() {
 			current_score_text.text = '';
 			current_best_text.text = 'Current Best';
 			current_best_score_text.text = high_score;
+			wind = 0;
+			wind_text.text = 'No hay viento';
 		}
-		emoji = game.add.sprite(220, 100, emojiName);
+		emoji = game.add.sprite(210, 70, emojiName);
 		emoji.scale.setTo(0.50, 0.50);
 		moveInTween = game.add.tween(emoji).from( { y: 150 }, 500, Phaser.Easing.Elastic.Out, true);
 		fadeInTween = game.add.tween(emoji).from( { alpha: 0 }, 200, Phaser.Easing.Linear.None, true, 0, 0, false);
@@ -236,17 +241,17 @@ function hitRim() {
 
 function createBall() {
 
-	var xpos;
-	if (current_score === 0) {
-		xpos = 256;
-	} else {
-		xpos = 60 + Math.random() * 280;
-	}
+	var xpos = 256;
+	// if (current_score === 0) {
+	// 	xpos = 256;
+	// } else {
+	// 	xpos = 60 + Math.random() * 280;
+	// }
 	spawn.play();
-	ball = game.add.sprite(xpos, 600, 'ball');
-	game.add.tween(ball.scale).from({x : 0.7, y : 0.7}, 100, Phaser.Easing.Linear.None, true, 0, 0, false);
+	ball = game.add.sprite(xpos,600, 'ball');
+	game.add.tween(ball.scale).from({x : 0.7, y : 0.7}, 300, Phaser.Easing.Linear.None, true, 0, 0, false);
 	game.physics.p2.enable(ball, false);
-	ball.body.setCircle(60); // NOTE: Goes from 60 to 36
+	ball.body.setCircle(40); // NOTE: Goes from 60 to 36
 	ball.launched = false;
 	ball.isBelowHoop = false;
 
@@ -265,7 +270,7 @@ function click(pointer) {
 		isDown = true;
 		location_interval = setInterval(function () {
 			start_location = [pointer.x, pointer.y];
-		}.bind(this), 200);
+		}.bind(this), 100);
 	}
 
 }
@@ -289,16 +294,16 @@ function release(pointer) {
 function launch(x_traj) {
 
 	if (ball.launched === false) {
-		ball.body.setCircle(36);
+		ball.body.setCircle(20);
 		ball.body.setCollisionGroup(collisionGroup);
 		current_best_text.text = '';
 		current_best_score_text.text = '';
 		ball.launched = true;
 		game.physics.p2.gravity.y = 3000;
 
-		//game.physics.p2.gravity.x = 2000;
+		game.physics.p2.gravity.x = wind;
 
-		game.add.tween(ball.scale).to({x : 0.4, y : 0.4}, 500, Phaser.Easing.Linear.None, true, 0, 0, false);
+		game.add.tween(ball.scale).to({x : 0.4, y : 0.4}, 50, Phaser.Easing.Linear.None, true, 0, 0, false);
 		ball.body.velocity.x = x_traj;
 		ball.body.velocity.y = -1750;
 		ball.body.rotateRight(x_traj / 3);
