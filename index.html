@@ -76,7 +76,9 @@ var hoop,
 	high_score_text,
 	current_best_text,
 	wind = 0,
-	wind_text;
+	wind_text,
+	lifes = 3,
+	lifes_text;
 
 var score_sound,
 	backboard,
@@ -151,6 +153,8 @@ function create() {
 	current_best_text = game.add.text(200, 320, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });// 230, 450
 	current_best_score_text = game.add.text(244, 351, '', { font: 'Verdana', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
 	wind_text = game.add.text(240, 750, '', { font: 'Verdana', fontSize: '25px', fill: '#000', align: 'right' })
+	lifes_text = game.add.text(100, 75, lifes, { font: 'Verdana', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
+
 
 	createBall();
 
@@ -186,6 +190,10 @@ function update() {
 			current_score += 1;
 			current_score_text.text = current_score;
 			score_sound.play();
+			if (current_score === 1) {
+				lifes+=1;
+				lifes_text.text = lifes;
+			}
 			setTimeout(function(){
 				game.physics.p2.gravity.y = 0;
 				game.physics.p2.gravity.x = 0;
@@ -198,16 +206,31 @@ function update() {
 		} else {
 			emojiName = "lose" + rand;
 			fail.play();
-			if (current_score > high_score) {
+			if (lifes) {
+				lifes -= 1;
+				lifes_text.text = lifes;
+			}else{
+				if (current_score > high_score) {
 				high_score = current_score;
-			// 	high_score_text.text = 'High Score\n' + high_score;
+				// 	high_score_text.text = 'High Score\n' + high_score;
+				}
+				current_score = 0;
+				current_score_text.text = '';
+				current_best_text.text = 'Record Actual';
+				current_best_score_text.text = high_score;
+				wind = 0;
+				wind_text.text = 'No hay viento';
 			}
-			current_score = 0;
-			current_score_text.text = '';
-			current_best_text.text = 'Current Best';
-			current_best_score_text.text = high_score;
-			wind = 0;
-			wind_text.text = 'No hay viento';
+			// if (current_score > high_score) {
+			// 	high_score = current_score;
+			// // 	high_score_text.text = 'High Score\n' + high_score;
+			// }
+			// current_score = 0;
+			// current_score_text.text = '';
+			// current_best_text.text = 'Record Actual';
+			// current_best_score_text.text = high_score;
+			// wind = 0;
+			// wind_text.text = 'No hay viento';
 		}
 		emoji = game.add.sprite(210, 70, emojiName);
 		emoji.scale.setTo(0.50, 0.50);
@@ -241,12 +264,12 @@ function hitRim() {
 
 function createBall() {
 
-	var xpos = 256;
-	// if (current_score === 0) {
-	// 	xpos = 256;
-	// } else {
-	// 	xpos = 60 + Math.random() * 280;
-	// }
+	var xpos;
+	if (current_score < 5) {
+		xpos = 256;
+	} else {
+		xpos = 60 + Math.random() * 280;
+	}
 	spawn.play();
 	ball = game.add.sprite(xpos,600, 'ball');
 	game.add.tween(ball.scale).from({x : 0.7, y : 0.7}, 300, Phaser.Easing.Linear.None, true, 0, 0, false);
@@ -284,7 +307,7 @@ function release(pointer) {
 
 		if (end_location[1] < start_location[1]) {
 			var slope = [end_location[0] - start_location[0], end_location[1] - start_location[1]];
-			var x_traj = -2300 * slope[0] / slope[1];
+			var x_traj = -1000 * slope[0] / slope[1];
 			launch(x_traj);
 		}
 	}
