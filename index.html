@@ -4,11 +4,12 @@
 	<meta charset="UTF-8" />
     <title>Trash Can Basketball</title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
-	<h2>Productive Day at the Office</h2>
+	<h2>Basketball de oficina version 0.5.1</h2>
     <style type="text/css">
         body {
             margin: 0;
 			font-family: 'Verdana';
+			background-color: #d2d2d2;
         }
 		canvas {
 			margin: 0 auto;
@@ -22,6 +23,9 @@
 		}
 		h2 {
 			text-align: center;
+			font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+			font-size: xxx-large;
+			text-shadow: 1px 1px 2px rgb(199, 75, 75), 0 0 1em rgb(18, 18, 61), 0 0 0.2em blue;
 		}
     </style>
 </head>
@@ -31,6 +35,7 @@
 
 // NOTE: Originally 640x1000. Other possible sizes: 512x800, 400x625
 var game = new Phaser.Game(512, 800, Phaser.CANVAS, '', { preload: preload, create: create, update: update });
+//alert("La resolucion es de " +screen.width + " x " + screen.height )
 
 function preload() {
 
