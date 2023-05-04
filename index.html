@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
     <title>Trash Can Basketball</title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
-	<h2>Basketball de oficina version 0.5.1</h2>
+	<h2>Basketball de oficina version 0.5.4</h2>
     <style type="text/css">
         body {
             margin: 0;
@@ -46,6 +46,8 @@ function preload() {
 	game.load.image('left wall can', 'assets/images/Recurso 6.png');
 	game.load.image('right wall can', 'assets/images/Recurso 8.png');
 	game.load.image('bottom can', 'assets/images/Recurso 7.png');
+	game.load.image('wind right', 'assets/images/windRight.png');
+	game.load.image('wind left', 'assets/images/windLeft.png');
 
 
 	game.load.image('win0', 'assets/images/win0.png');
@@ -82,8 +84,10 @@ var hoop,
 	current_best_text,
 	wind = 0,
 	wind_text,
+	wind_direction,
 	lifes = 4,
-	lifes_text;
+	lifes_text,
+	tries = [];
 
 var score_sound,
 	backboard,
@@ -99,7 +103,6 @@ var moveInTween,
 	emojiName;
 
 var collisionGroup;
-var plusOrMinus = Math.random() < 0.5 ? -1 : 1;
 
 function create() {
 
@@ -128,7 +131,14 @@ function create() {
 	right_rim = game.add.sprite(300, 184, 'side rim'); // 398, 296
 	left_wall_can = game.add.sprite(210,240, 'left wall can')
 	right_wall_can = game.add.sprite(295,240, 'right wall can')
-	bottom_can = game.add.sprite(256,308, 'bottom can')
+	bottom_can = game.add.sprite(266,308, 'bottom can')
+	bottom_can.scale.setTo(0.850, 1);
+
+	for (let index = 0; index < lifes; index++) {
+		tries[index] = game.add.sprite(90 + 50*index ,70, 'ball');
+		tries[index].scale.setTo(0.50, 0.50);
+		
+	}
 
 
 	game.physics.p2.enable([ left_rim, right_rim, left_wall_can, right_wall_can, bottom_can], false);
@@ -157,8 +167,8 @@ function create() {
 	current_score_text = game.add.text(244, 351, '', { font: 'Verdana', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
 	current_best_text = game.add.text(200, 320, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });// 230, 450
 	current_best_score_text = game.add.text(244, 351, '', { font: 'Verdana', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
-	wind_text = game.add.text(240, 750, '', { font: 'Verdana', fontSize: '25px', fill: '#000', align: 'right' })
-	lifes_text = game.add.text(100, 75, lifes, { font: 'Verdana', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
+	wind_text = game.add.text(240, 750, 'No hay viento', { font: 'Verdana', fontSize: '25px', fill: '#000', align: 'right' })
+	lifes_text = game.add.text(75, 55, "Intentos restantes: " + lifes, { font: 'Verdana', fontSize: '20px', fill: '#000', align: 'center' }); // 300, 500
 
 
 	createBall();
@@ -197,7 +207,7 @@ function update() {
 			score_sound.play();
 			if (current_score === 3) {
 				lifes+=1;
-				lifes_text.text = lifes;
+				lifes_text.text = "Intentos restantes: " + lifes;
 				//Extra life notification
 			}
 			setTimeout(function(){
@@ -206,19 +216,30 @@ function update() {
 				ball.kill();
 				createBall();
 			},2000);
-			wind = (Math.random() < 0.5 ? -1 : 1) * current_score * 200;
-			wind_text.text = 'El viento es de ' +  (wind / 100)  + 'k/h';
+
+			//////////////
+			wind_direction ? wind_direction.kill() : null;
+			if((Math.random() < 0.5 ? -1 : 1)>0){
+				wind_direction = game.add.sprite(300,680, 'wind right');
+
+				wind = current_score * 200;
+			}else{
+				wind_direction = game.add.sprite(300,680, 'wind left');
+	
+				wind = -1 * current_score * 200;
+
+			}
+			wind_direction.scale.setTo(0.50, 0.50);
+			wind_text.text = 'El viento es de ' +  (current_score * 2)  + ' k/h';
 
 		} else {
 			emojiName = "lose" + rand;
 			fail.play();
 			if (lifes) {
 				lifes -= 1;
-				lifes_text.text = lifes;
 			}else{
 				if (current_score > high_score) {
 				high_score = current_score;
-				// 	high_score_text.text = 'High Score\n' + high_score;
 				}
 				current_score = 0;
 				current_score_text.text = '';
@@ -227,7 +248,8 @@ function update() {
 				wind = 0;
 				wind_text.text = 'No hay viento';
 				lifes = 4;
-				lifes_text.text = lifes;
+				alert("Perdiste!!")
+				wind_direction.kill()
 			}
 			// if (current_score > high_score) {
 			// 	high_score = current_score;
@@ -238,8 +260,10 @@ function update() {
 			// current_best_text.text = 'Record Actual';
 			// current_best_score_text.text = high_score;
 			// wind = 0;
-			// wind_text.text = 'No hay viento';
+			// wind_text.text = 'No hay viento'
+			lifes_text.text = "Intentos restantes: " + lifes;
 		}
+		tries[lifes]?.kill();
 		emoji = game.add.sprite(210, 70, emojiName);
 		emoji.scale.setTo(0.50, 0.50);
 		moveInTween = game.add.tween(emoji).from( { y: 150 }, 500, Phaser.Easing.Elastic.Out, true);
