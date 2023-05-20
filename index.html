@@ -190,11 +190,11 @@ console.log(game.add);
 
 
 	var instructions = document.createElement("span");
-	instructions.innerHTML = "Instructions: Quickly drag the paper ball to shoot it into the trash can!";
+	instructions.innerHTML = "Instrucciones: Deslice rápidamente la bola de papel hacia el cesto de basura!";
 	document.body.appendChild(instructions);
 
 	var firma = document.createElement("h2");
-	firma.innerHTML = "Developed by Lucas Parra";
+	firma.innerHTML = "Desarrollado por Lucas Parra";
 	document.body.appendChild(firma);
 
 }
@@ -220,10 +220,10 @@ function update() {
 				lifes+=1;
 				lifes_text.text = "Intentos restantes: " + lifes;
 				//Extra life notification
-				streak_notification.text = 'Intento extra!';
+				streak_notification.text = '¡Intento extra!';
 				setTimeout(function(){
 					streak_notification.text = '';
-				},2000)
+				},2000);
 
 				tries[lifes-1] = game.add.sprite(90 + 50*(lifes -1),70, 'ball');
 				tries[lifes-1].scale.setTo(0.50, 0.50);
@@ -261,6 +261,12 @@ function update() {
 				console.log(tries);
 				game.add.tween(tries[lifes]).to( { alpha: 0 }, 300, Phaser.Easing.Linear.None, true, 0, 0, false);
 				tries.pop()
+				if (lifes === 0){
+					streak_notification.text = '¡Ultimo Intento!';
+					setTimeout(function(){
+						streak_notification.text = '';
+					},2000)
+				}
 
 			}else{
 				if (current_score > high_score) {
