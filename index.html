@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
     <title>Trash Can Basketball</title>
 	<script type="text/javascript" src="js/phaser.min.js"></script>
-	<h2>Basketball de oficina version 0.5.9</h2>
+	<h2>Basketball de oficina version 0.6</h2>
     <style type="text/css">
         body {
             margin: 0;
@@ -39,6 +39,8 @@ var game = new Phaser.Game(512, 800, Phaser.CANVAS, '', { preload: preload, crea
 //alert("La resolucion es de " +screen.width + " x " + screen.height )
 
 function preload() {
+
+	game.load.image('bg', 'assets/images/background.png')
 
     game.load.image('ball', 'assets/images/ball2.png');
     game.load.image('hoop', 'assets/images/Recurso4.png');
@@ -89,7 +91,8 @@ var hoop,
 	wind_direction,
 	lifes = 4,
 	lifes_text,
-	tries = [];
+	tries = [],
+	background;
 
 var score_sound,
 	backboard,
@@ -111,11 +114,7 @@ function loadTries() {
 	for (let index = 0; index < lifes; index++) {
 		tries[index] = game.add.sprite(90 + 50*index ,70, 'ball');
 		tries[index].scale.setTo(0.50, 0.50);
-		
 	}
-
-console.log(tries);
-
 }
 
 function create() {
@@ -139,17 +138,19 @@ function create() {
 	spawn = game.add.audio('spawn');
 
 	game.stage.backgroundColor = "#ffffff";
-
+	background = game.add.sprite(-100,-400, 'bg');
+	background.scale.setTo(1.5,1.8)
 	hoop = game.add.sprite(206, 175, 'hoop'); // 141, 100
 	left_rim = game.add.sprite(206, 184, 'side rim'); // 241, 296
 	right_rim = game.add.sprite(300, 184, 'side rim'); // 398, 296
 	left_wall_can = game.add.sprite(210,240, 'left wall can')
+	left_wall_can.scale.setTo(1, 1.5);
 	right_wall_can = game.add.sprite(295,240, 'right wall can')
+	right_wall_can.scale.setTo(1, 1.5);
 	bottom_can = game.add.sprite(253,308, 'bottom can')
 	bottom_can.scale.setTo(0.500, 1);
 
 	loadTries();	
-console.log(game.add);
 
 	game.physics.p2.enable([ left_rim, right_rim, left_wall_can, right_wall_can, bottom_can], false);
 
@@ -177,8 +178,8 @@ console.log(game.add);
 	current_score_text = game.add.text(244, 351, '', { font: 'Verdana', fontSize: '40px', fill: '#000', align: 'center' }); // 300, 500
 	current_best_text = game.add.text(200, 320, '', { font: 'Arial', fontSize: '20px', fill: '#000', align: 'center' });// 230, 450
 	current_best_score_text = game.add.text(244, 351, '', { font: 'Verdana', fontSize: '40px', fill: '#00e6e6', align: 'center' }); // 300, 500
-	wind_text = game.add.text(240, 750, 'No hay viento', { font: 'Verdana', fontSize: '25px', fill: '#000', align: 'right' })
-	lifes_text = game.add.text(75, 55, "Intentos restantes: " + lifes, { font: 'Verdana', fontSize: '20px', fill: '#000', align: 'center' }); // 300, 500
+	wind_text = game.add.text(220, 750, 'No hay viento', { font: 'Verdana', fontSize: '25px', fontStyle: 'bold', fill: '#ffffff', align: 'right' })
+	lifes_text = game.add.text(62, 45, "Intentos restantes: " + lifes, { font: 'Verdana', fontSize: '20px', fontStyle: 'bold', fill: '#ffffff', align: 'center' }); // 300, 500
 	streak_notification = game.add.text(145, 400, '', { font: 'Impact', fontSize: '40px', fill: '#901238', align: 'center' });
 
 	createBall();
@@ -202,7 +203,6 @@ console.log(game.add);
 function update() {
 
 	if (ball && ball.body.velocity.y > 0) {
-		// front_rim = game.add.sprite(206, 182, 'front rim');
 		ball.body.collides([collisionGroup], hitRim, this);
 	}
 
@@ -219,7 +219,6 @@ function update() {
 			if (streak === 1) {
 				lifes+=1;
 				lifes_text.text = "Intentos restantes: " + lifes;
-				//Extra life notification
 				streak_notification.text = '¡Intento extra!';
 				setTimeout(function(){
 					streak_notification.text = '';
@@ -237,7 +236,6 @@ function update() {
 				createBall();
 			},1000);
 
-			//////////////
 			wind_direction ? wind_direction.kill() : null;
 			if((Math.random() < 0.5 ? -1 : 1)>0){
 				wind_direction = game.add.sprite(300,680, 'wind right');
